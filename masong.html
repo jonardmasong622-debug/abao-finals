@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purok Voice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7047EB',
+                        secondary: '#47B8BE',
+                        lightBlue: '#E6F2FF',
+                        darkBlue: '#1A2036',
+                        purple: '#5E35B1',
+                        teal: '#4ECDC4',
+                        headerBlue: '#4A89DC',
+                        grayIcon: '#9E9E9E',
+                        darkBg: '#121212',
+                        darkCard: '#1E1E1E',
+                        darkText: '#E0E0E0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .bg-overlay {
+                background-color: rgba(255, 255, 255, 0.25);
+                backdrop-filter: blur(8px);
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .toggle-switch {
+                width: 40px;
+                height: 20px;
+                border-radius: 20px;
+                background-color: #ccc;
+                position: relative;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            .toggle-switch.active {
+                background-color: #4A89DC;
+            }
+            .toggle-dot {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background-color: white;
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                transition: 0.3s;
+            }
+            .toggle-switch.active .toggle-dot {
+                transform: translateX(20px);
+            }
+            .like-active {
+                color: #EF4444 !important;
+            }
+            .dark-mode .bg-lightBlue {
+                background-color: #1E1E1E !important;
+            }
+            .dark-mode .bg-white\/80 {
+                background-color: rgba(18, 18, 18, 0.8) !important;
+            }
+            .dark-mode body {
+                background-color: #121212;
+                color: #E0E0E0;
+            }
+            .dark-mode .text-gray-800 {
+                color: #E0E0E0 !important;
+            }
+            .dark-mode .text-gray-700 {
+                color: #BDBDBD !important;
+            }
+            .dark-mode .text-gray-500 {
+                color: #9E9E9E !important;
+            }
+            .dark-mode .text-gray-600 {
+                color: #9E9E9E !important;
+            }
+            .dark-mode input, .dark-mode textarea {
+                background-color: #1E1E1E !important;
+                color: #E0E0E0 !important;
+                border-color: #333 !important;
+            }
+        }
+    </style>
+    <style>
+        body {
+            background-image: url('https://picsum.photos/id/1082/1920/1080');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode body {
+            background-color: #121212;
+            background-image: none;
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen">
+    <div id="page1" class="page-container w-full min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <div class="bg-overlay rounded-2xl p-6 md:p-10 w-full max-w-md lg:max-w-lg text-center">
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-white mb-2">Purok Voice</h1>
+            <p class="text-white/90 mb-8 text-sm md:text-base">Share your voice, build community</p>
+
+            <button onclick="goToPage(2)" class="w-full bg-primary hover:bg-primary/90 text-white py-3 px-4 rounded-lg flex items-center justify-between mb-4 transition-all">
+                <div class="flex items-center gap-3">
+                    <i class="fa fa-user-circle text-xl"></i>
+                    <div class="text-left">
+                        <div class="font-semibold">Purok Member</div>
+                        <div class="text-xs opacity-80">View Updates and share feedback</div>
+                    </div>
+                </div>
+                <i class="fa fa-arrow-right"></i>
+            </button>
+
+            <button onclick="goToPage(2)" class="w-full bg-primary hover:bg-primary/90 text-white py-3 px-4 rounded-lg flex items-center justify-between transition-all">
+                <div class="flex items-center gap-3">
+                    <i class="fa fa-cog text-xl"></i>
+                    <div class="text-left">
+                        <div class="font-semibold">Admin</div>
+                        <div class="text-xs opacity-80">Post updates and share feedback</div>
+                    </div>
+                </div>
+                <i class="fa fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="page2" class="page-container hidden w-full min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <div class="bg-overlay rounded-2xl p-6 md:p-10 w-full max-w-md lg:max-w-lg text-center">
+            <div class="w-20 h-20 md:w-28 md:h-28 bg-white rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Enter your mobile number</h2>
+            <p class="text-white/80 text-sm mb-6">We'll send you a verification code</p>
+
+            <div class="mb-4">
+                <label class="block text-white text-xs text-left mb-1">Mobile Number</label>
+                <input type="number" id="mobileInput" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value = this.value.slice(0,11)" class="w-full bg-primary/80 text-white py-3 px-4 rounded-lg border-none outline-none placeholder:text-white/70 text-center text-lg">
+            </div>
+
+            <button onclick="savePhoneAndGo(3)" class="w-full bg-darkBlue hover:bg-darkBlue/90 text-white py-2.5 px-4 rounded-lg mb-3 transition-all">Send OTP</button>
+            <button onclick="goToPage(1)" class="w-full bg-darkBlue hover:bg-darkBlue/90 text-white py-2.5 px-4 rounded-lg transition-all">Back</button>
+        </div>
+    </div>
+
+    <div id="page3" class="page-container hidden w-full min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <div class="bg-overlay rounded-2xl p-6 md:p-10 w-full max-w-md lg:max-w-lg text-center">
+            <div class="w-20 h-20 md:w-28 md:h-28 bg-white rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Enter verification code</h2>
+
+            <div class="mb-6">
+                <label class="block text-white text-xs text-left mb-1">OTP code</label>
+                <input type="number" placeholder="0000" maxlength="4" oninput="this.value = this.value.slice(0,4)" class="w-full bg-primary/80 text-white py-3 px-4 rounded-lg border-none outline-none placeholder:text-white/70 text-center text-lg tracking-widest">
+            </div>
+
+            <button onclick="goToPage(4)" class="w-full bg-darkBlue hover:bg-darkBlue/90 text-white py-2.5 px-4 rounded-lg mb-3 transition-all">Verify</button>
+            <button class="w-full bg-darkBlue hover:bg-darkBlue/90 text-white py-2.5 px-4 rounded-lg transition-all">Resend</button>
+        </div>
+    </div>
+
+    <div id="page4" class="page-container hidden w-full min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <div class="bg-overlay rounded-2xl p-6 md:p-10 w-full max-w-md lg:max-w-lg text-center">
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-6">Select Your Purok</h2>
+
+            <div class="grid grid-cols-3 gap-3 md:gap-4 mb-8">
+                <button onclick="selectPurok(1)" class="bg-primary hover:bg-primary/90 text-white py-4 md:py-6 rounded-lg font-semibold text-lg md:text-xl transition-all">Purok 1</button>
+                <button onclick="selectPurok(2)" class="bg-primary hover:bg-primary/90 text-white py-4 md:py-6 rounded-lg font-semibold text-lg md:text-xl transition-all">Purok 2</button>
+                <button onclick="selectPurok(3)" class="bg-primary hover:bg-primary/90 text-white py-4 md:py-6 rounded-lg font-semibold text-lg md:text-xl transition-all">Purok 3</button>
+                <button onclick="selectPurok(4)" class="bg-primary hover:bg-primary/90 text-white py-4 md:py-6 rounded-lg font-semibold text-lg md:text-xl transition-all">Purok 4</button>
+                <button onclick="selectPurok(5)" class="bg-primary hover:bg-primary/90 text-white py-4 md:py-6 rounded-lg font-semibold text-lg md:text-xl transition-all">Purok 5</button>
+                <button onclick="selectPurok(6)" class="bg-primary hover:bg-primary/90 text-white py-4 md:py-6 rounded-lg font-semibold text-lg md:text-xl transition-all">Purok 6</button>
+            </div>
+
+            <button onclick="goToPage(5)" class="w-full bg-darkBlue hover:bg-darkBlue/90 text-white py-3 px-4 rounded-lg font-semibold transition-all">Continue</button>
+        </div>
+    </div>
+
+    <div id="page5" class="page-container hidden w-full min-h-screen flex flex-col">
+        <header class="bg-headerBlue text-white p-4 flex items-center gap-3 transition-colors">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg">Purok Voice</h1>
+                <p class="text-sm opacity-90" id="currentPurokDisplay">Purok 1</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 bg-white/80 overflow-y-auto scrollbar-hide transition-colors" id="feedContainer">
+            <div class="bg-lightBlue rounded-lg p-4 mb-4 post-item">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fa fa-user-circle-o text-2xl text-gray-700"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">Barangay Admin <i class="fa fa-flag text-yellow-600"></i></h3>
+                        <p class="text-xs text-gray-500"><i class="fa fa-clock-o"></i> 2 hours ago</p>
+                    </div>
+                </div>
+                <p class="text-gray-800 mb-3">Reminder: Community clean-up drive this Saturday, 7 AM. Please bring your own cleaning materials. Let's keep our community clean and beautiful! 🌿</p>
+                <div class="flex gap-4 text-gray-600">
+                    <button class="like-btn hover:text-red-500 transition-colors"><i class="fa fa-heart-o"></i> <span>0</span></button>
+                    <button class="comment-btn hover:text-primary transition-colors"><i class="fa fa-comment-o"></i> <span>0</span></button>
+                </div>
+                <div class="comment-area hidden mt-3">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Write a comment..." class="flex-1 px-3 py-1 rounded border dark:bg-darkBg dark:border-gray-700 dark:text-darkText">
+                        <button class="bg-primary text-white px-2 rounded post-comment">Post</button>
+                    </div>
+                    <div class="comments-list mt-2 space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="bg-purple/80 text-white rounded-lg p-3 ml-8 max-w-[85%] post-item mb-3">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fa fa-user-circle-o text-lg"></i>
+                    <span class="font-medium">Robert</span>
+                </div>
+                <p>Cge bossing!</p>
+                <p class="text-xs text-white/70 mt-1">20 mins ago</p>
+                <div class="flex gap-4 text-white/80 mt-2">
+                    <button class="like-btn hover:text-red-300 transition-colors"><i class="fa fa-heart-o"></i> <span>0</span></button>
+                    <button class="comment-btn hover:text-blue-200 transition-colors"><i class="fa fa-comment-o"></i> <span>0</span></button>
+                </div>
+                <div class="comment-area hidden mt-3">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Write a comment..." class="flex-1 px-3 py-1 rounded border bg-white/20 border-white/30 text-white placeholder:text-white/70">
+                        <button class="bg-white text-purple px-2 rounded post-comment">Post</button>
+                    </div>
+                    <div class="comments-list mt-2 space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="bg-purple/80 text-white rounded-lg p-3 ml-8 max-w-[85%] post-item">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fa fa-user-circle-o text-lg"></i>
+                    <span class="font-medium">Nico</span>
+                </div>
+                <p>Oo otw na!</p>
+                <p class="text-xs text-white/70 mt-1">58 mins ago</p>
+                <div class="flex gap-4 text-white/80 mt-2">
+                    <button class="like-btn hover:text-red-300 transition-colors"><i class="fa fa-heart-o"></i> <span>0</span></button>
+                    <button class="comment-btn hover:text-blue-200 transition-colors"><i class="fa fa-comment-o"></i> <span>0</span></button>
+                </div>
+                <div class="comment-area hidden mt-3">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Write a comment..." class="flex-1 px-3 py-1 rounded border bg-white/20 border-white/30 text-white placeholder:text-white/70">
+                        <button class="bg-white text-purple px-2 rounded post-comment">Post</button>
+                    </div>
+                    <div class="comments-list mt-2 space-y-1"></div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bg-teal text-white flex justify-around py-3 shadow-lg transition-colors">
+            <button onclick="goToPage(5)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-home text-xl"></i>
+            </button>
+            <button onclick="goToPage(7)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-user-circle text-xl"></i>
+            </button>
+            <button onclick="goToPage(6)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-comment text-xl"></i>
+            </button>
+            <button onclick="goToPage(8)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-cog text-xl"></i>
+            </button>
+        </nav>
+    </div>
+
+    <div id="page6" class="page-container hidden w-full min-h-screen flex flex-col">
+        <header class="bg-headerBlue text-white p-4 flex items-center gap-3 transition-colors">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg">Purok Voice</h1>
+                <p class="text-sm opacity-90" id="currentPurokDisplay2">Purok 1</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 bg-white/80 transition-colors">
+            <div class="bg-purple text-white rounded-lg p-4 mb-6">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fa fa-user-secret text-xl"></i>
+                    <h3 class="font-bold">Anonymous feedback</h3>
+                    <p class="text-sm opacity-90 ml-auto">Your identity is protected. Share your honest thoughts, concerns, or suggestions without fear of judgment.</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-medium mb-2">Your Feedback</label>
+                <textarea id="feedbackInput" placeholder="Share your thoughts and suggestions.........." rows="8" maxlength="500" class="w-full bg-lightBlue rounded-lg p-3 border-none outline-none resize-none"></textarea>
+                <p class="text-right text-sm text-gray-500 mt-1">0/500</p>
+            </div>
+
+            <button onclick="postFeedback()" class="w-full bg-darkBlue hover:bg-darkBlue/90 text-white py-3 px-4 rounded-lg font-semibold transition-all">Submit Feedback</button>
+        </main>
+
+        <nav class="bg-teal text-white flex justify-around py-3 shadow-lg transition-colors">
+            <button onclick="goToPage(5)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-home text-xl"></i>
+            </button>
+            <button onclick="goToPage(7)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-user-circle text-xl"></i>
+            </button>
+            <button onclick="goToPage(6)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-comment text-xl"></i>
+            </button>
+            <button onclick="goToPage(8)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-cog text-xl"></i>
+            </button>
+        </nav>
+    </div>
+
+    <div id="page7" class="page-container hidden w-full min-h-screen flex flex-col">
+        <header class="bg-headerBlue text-white p-4 flex items-center gap-3 transition-colors">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg">Purok Voice</h1>
+                <p class="text-sm opacity-90" id="currentPurokDisplay3">Purok 1</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 bg-white/80 transition-colors">
+            <div class="bg-lightBlue rounded-lg p-6 mb-4 text-center">
+                <i class="fa fa-user-circle-o text-5xl text-gray-700 mb-2"></i>
+                <h3 class="font-bold text-lg">Community Member</h3>
+                <p class="text-sm text-gray-500"><i class="fa fa-user"></i> Member</p>
+            </div>
+
+            <div class="bg-purple text-white rounded-lg p-4 space-y-3">
+                <h3 class="font-bold text-lg mb-2">Profile Information</h3>
+                <div class="flex items-center gap-3">
+                    <i class="fa fa-map-marker text-lg"></i>
+                    <div>
+                        <p class="text-sm opacity-80">Purok</p>
+                        <p id="profilePurok">Purok 1</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i class="fa fa-phone text-lg"></i>
+                    <div>
+                        <p class="text-sm opacity-80">Phone Number</p>
+                        <p id="profilePhone">+63 9XXXXXXXXX</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bg-teal text-white flex justify-around py-3 shadow-lg transition-colors">
+            <button onclick="goToPage(5)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-home text-xl"></i>
+            </button>
+            <button onclick="goToPage(7)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-user-circle text-xl"></i>
+            </button>
+            <button onclick="goToPage(6)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-comment text-xl"></i>
+            </button>
+            <button onclick="goToPage(8)" class="flex flex-col items-center gap-1 hover:text-white/80">
+                <i class="fa fa-cog text-xl"></i>
+            </button>
+        </nav>
+    </div>
+
+    <div id="page8" class="page-container hidden w-full min-h-screen flex flex-col">
+        <header class="bg-headerBlue text-white p-4 flex items-center gap-3 transition-colors">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M35 20 L45 30 L40 35 L30 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 20 L55 30 L60 35 L70 25 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M35 80 L45 70 L40 65 L30 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M65 80 L55 70 L60 65 L70 75 Z" stroke="black" stroke-width="4" fill="none"/>
+                    <path d="M45 40 C40 35 30 40 30 50 C30 60 50 70 50 70 C50 70 70 60 70 50 C70 40 60 35 55 40 C52 43 48 43 45 40 Z" fill="#47E0E4" stroke="#47E0E4" stroke-width="2"/>
+                    <path d="M42 48 L58 48 M50 42 L50 58" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg">Purok Voice</h1>
+                <p class="text-sm opacity-90" id="currentPurokDisplay4">Purok 1</p>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 bg-white transition-colors space-y-5">
+            <div class="bg-lightBlue rounded-xl p-5">
+                <h3 class="font-bold text-gray-800 mb-4 text-base">Preferences</h3>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-grayIcon rounded-full flex items-center justify-center text-white">
+                            <i class="fa fa-bell"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800 text-sm">Notifications</p>
+                            <p class="text-xs text-gray-600">Manage your alert</p>
+                        </div>
+                    </div>
+                    <div class="toggle-switch" id="notifToggle" onclick="toggleSwitch('notifToggle')">
+                        <div class="toggle-dot"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-grayIcon rounded-full flex items-center justify-center text-white">
+                            <i class="fa fa-moon-o"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800 text-sm">Dark Mode</p>
+                            <p class="text-xs text-gray-600">Toggle Theme</p>
+                        </div>
+                    </div>
+                    <div class="toggle-switch" id="darkToggle" onclick="toggleDarkMode()">
+                        <div class="toggle-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-lightBlue rounded-xl p-5">
+                <h3 class="font-bold text-gray-800 mb-4 text-base">Accounts</h3>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-grayIcon rounded-full flex items-center justify-center text-white">
+                            <i class="fa fa-shield"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800 text-sm">Privacy</p>
+                            <p class="text-xs text-gray-600">Manage your privacy settings</p>
+                        </div>
+                    </div>
+                    <button onclick="alert('Privacy settings opened!')" class="text-gray-600 hover:text-headerBlue">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-grayIcon rounded-full flex items-center justify-center text-white">
+                            <i class="fa fa-sign-out"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800 text-sm">Logout</p>
+                        </div>
+                    </div>
+                    <button onclick="logoutApp()" class="text-gray-600 hover:text-red-600">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-lightBlue rounded-xl p-5">
+                <h3 class="font-bold text-gray-800 mb-4 text-base">About</h3>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-grayIcon rounded-full flex items-center justify-center text-white">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800 text-sm">About Purok Voice</p>
+                            <p class="text-xs text-gray-600">Version 1.0.0</p>
+                        </div>
+                    </div>
+                    <button onclick="alert('Purok Voice: Share your voice, build community!')" class="text-gray-600 hover:text-headerBlue">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bg-teal text-white flex justify-around py-4 shadow-lg transition-colors">
+            <button onclick="goToPage(5)" class="flex flex-col items-center gap-1">
+                <i class="fa fa-home text-2xl"></i>
+            </button>
+            <button onclick="goToPage(7)" class="flex flex-col items-center gap-1">
+                <i class="fa fa-user-circle text-2xl"></i>
+            </button>
+            <button onclick="goToPage(6)" class="flex flex-col items-center gap-1">
+                <i class="fa fa-comment text-2xl"></i>
+            </button>
+            <button onclick="goToPage(8)" class="flex flex-col items-center gap-1">
+                <i class="fa fa-cog text-2xl"></i>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        let selectedPurok = 1;
+        let savedPhone = "";
+        let isDark = false;
+
+        function savePhoneAndGo(pageNum) {
+            savedPhone = document.getElementById('mobileInput').value;
+            document.getElementById('profilePhone').textContent = "+63 " + savedPhone;
+            goToPage(pageNum);
+        }
+
+        function goToPage(pageNum) {
+            document.querySelectorAll('.page-container').forEach(page => page.classList.add('hidden'));
+            document.getElementById(`page${pageNum}`).classList.remove('hidden');
+        }
+
+        function selectPurok(num) {
+            selectedPurok = num;
+            document.getElementById('currentPurokDisplay').textContent = `Purok ${num}`;
+            document.getElementById('currentPurokDisplay2').textContent = `Purok ${num}`;
+            document.getElementById('currentPurokDisplay3').textContent = `Purok ${num}`;
+            document.getElementById('currentPurokDisplay4').textContent = `Purok ${num}`;
+            document.getElementById('profilePurok').textContent = `Purok ${num}`;
+        }
+
+        function postFeedback() {
+            const text = document.getElementById('feedbackInput').value.trim();
+            if (text === "") {
+                alert("Please write something first!");
+                return;
+            }
+
+            const feed = document.getElementById('feedContainer');
+            const newPost = document.createElement('div');
+            newPost.className = "bg-purple/80 text-white rounded-lg p-3 ml-8 max-w-[85%] mb-3 post-item";
+            newPost.innerHTML = `
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fa fa-user-secret text-lg"></i>
+                    <span class="font-medium">Anonymous</span>
+                </div>
+                <p>${text}</p>
+                <p class="text-xs text-white/70 mt-1">Just now</p>
+                <div class="flex gap-4 text-white/80 mt-2">
+                    <button class="like-btn hover:text-red-300 transition-colors"><i class="fa fa-heart-o"></i> <span>0</span></button>
+                    <button class="comment-btn hover:text-blue-200 transition-colors"><i class="fa fa-comment-o"></i> <span>0</span></button>
+                </div>
+                <div class="comment-area hidden mt-3">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Write a comment..." class="flex-1 px-3 py-1 rounded border bg-white/20 border-white/30 text-white placeholder:text-white/70">
+                        <button class="bg-white text-purple px-2 rounded post-comment">Post</button>
+                    </div>
+                    <div class="comments-list mt-2 space-y-1"></div>
+                </div>
+            `;
+
+            feed.insertBefore(newPost, feed.firstChild);
+            document.getElementById('feedbackInput').value = "";
+            goToPage(5);
+            initPostInteractions();
+        }
+
+        function toggleSwitch(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('active');
+        }
+
+        function toggleDarkMode() {
+            const el = document.getElementById('darkToggle');
+            el.classList.toggle('active');
+            isDark = !isDark;
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        function logoutApp() {
+            if (confirm("Are you sure you want to logout?")) {
+                savedPhone = "";
+                selectedPurok = 1;
+                goToPage(1);
+            }
+        }
+
+        function initPostInteractions() {
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                if (!btn.dataset.bound) {
+                    btn.dataset.bound = "true";
+                    btn.addEventListener('click', function () {
+                        const icon = this.querySelector('i');
+                        const count = this.querySelector('span');
+                        let num = parseInt(count.textContent);
+                        icon.classList.toggle('fa-heart-o');
+                        icon.classList.toggle('fa-heart');
+                        this.classList.toggle('like-active');
+                        count.textContent = icon.classList.contains('fa-heart') ? num + 1 : num - 1;
+                    });
+                }
+            });
+
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                if (!btn.dataset.bound) {
+                    btn.dataset.bound = "true";
+                    btn.addEventListener('click', function () {
+                        const area = this.closest('.post-item').querySelector('.comment-area');
+                        area.classList.toggle('hidden');
+                    });
+                }
+            });
+
+            document.querySelectorAll('.post-comment').forEach(btn => {
+                if (!btn.dataset.bound) {
+                    btn.dataset.bound = "true";
+                    btn.addEventListener('click', function () {
+                        const input = this.parentElement.querySelector('input');
+                        const text = input.value.trim();
+                        if (text === "") return;
+
+                        const list = this.parentElement.parentElement.querySelector('.comments-list');
+                        const comment = document.createElement('div');
+                        comment.className = "text-sm bg-black/10 p-1 rounded";
+                        comment.textContent = text;
+                        list.appendChild(comment);
+
+                        const count = this.closest('.post-item').querySelector('.comment-btn span');
+                        count.textContent = parseInt(count.textContent) + 1;
+
+                        input.value = "";
+                    });
+                }
+            });
+        }
+
+        window.onload = function () {
+            initPostInteractions();
+        };
+    </script>
+</body>
+</html>
